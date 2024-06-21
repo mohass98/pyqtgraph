@@ -63,6 +63,14 @@ class ViewBoxMenu(QtWidgets.QMenu):
 
         leftMenu.addActions(group.actions())
 
+        # Add a new action for switching x and y axes
+        self.swapAxesAction = QtGui.QAction(
+            translate("ViewBox", "Swap X and Y Axes"), self
+        )
+        self.swapAxesAction.setCheckable(True)
+        self.swapAxesAction.triggered.connect(self.swapAxesToggled)
+        self.addAction(self.swapAxesAction)
+
         self.mouseModes = [pan, zoom]
         
         self.view().sigStateChanged.connect(self.viewStateChanged)
@@ -186,6 +194,10 @@ class ViewBoxMenu(QtWidgets.QMenu):
 
     def xInvertToggled(self, b):
         self.view().invertX(b)
+
+    def swapAxesToggled(self):
+        print('Switch Axes was clicked')
+        self.view().swapAxes()
 
     def setMouseMode(self, action):
         mode = None

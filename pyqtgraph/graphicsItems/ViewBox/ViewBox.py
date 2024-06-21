@@ -149,6 +149,7 @@ class ViewBox(GraphicsWidget):
 
             'yInverted': invertY,
             'xInverted': invertX,
+            'xyAxesSwapped': False,
             'aspectLocked': False,    ## False if aspect is unlocked, otherwise float specifies the locked ratio.
             'autoRange': [True, True],  ## False if auto range is disabled,
                                         ## otherwise float gives the fraction of data that is visible
@@ -1172,6 +1173,36 @@ class ViewBox(GraphicsWidget):
     def xInverted(self):
         return self.state['xInverted']
 
+    def swapAxes(self):
+        print('Switch Axes was received')
+        state = self.getState()
+
+        # Swap x and y axis ranges
+        x_range = state['targetRange'][0]
+        y_range = state['targetRange'][1]
+        self.setRange(yRange=x_range, padding=0)
+        self.setRange(xRange=y_range, padding=0)
+
+        self.enableAutoRange(ViewBox.XAxis, state['autoRange'][1])
+        self.enableAutoRange(ViewBox.YAxis, state['autoRange'][0])
+
+        self.setMouseEnabled(x=state['mouseEnabled'][1], y=state['mouseEnabled'][0])
+        self.invertX(state['yInverted'])
+        self.invertY(state['xInverted'])
+
+        # Track axis swapping
+        self.state['xyAxesSwapped'] = not self.state[
+            'xyAxesSwapped'
+        ]
+
+        # Update
+        self._matrixNeedsUpdate = True  # updateViewRange won't detect this for us
+        self.updateViewRange()
+        self.update()
+        self.sigStateChanged.emit(self)
+        self.sigYRangeChanged.emit(self, tuple(self.state['viewRange'][1]))
+        self.sigXRangeChanged.emit(self, tuple(self.state['viewRange'][0]))
+
     def setBorder(self, *args, **kwds):
         """
         Set the pen used to draw border around the view
@@ -1706,6 +1737,11 @@ class ViewBox(GraphicsWidget):
         m.scale(scale[0], scale[1])
         st = Point(vr.center())
         m.translate(-st[0], -st[1])
+        
+        if self.state["xyAxesSwapped"]:
+            # Adjust the transformation for swapped axes
+            self.invertX()
+            m.rotate(90)  # Rotate the matrix by 90 degrees
 
         self.childGroup.setTransform(m)
         self._matrixNeedsUpdate = False
