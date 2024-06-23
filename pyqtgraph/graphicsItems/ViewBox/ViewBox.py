@@ -149,6 +149,7 @@ class ViewBox(GraphicsWidget):
 
             'yInverted': invertY,
             'xInverted': invertX,
+            'xyAxesSwapped': False,
             'aspectLocked': False,    ## False if aspect is unlocked, otherwise float specifies the locked ratio.
             'autoRange': [True, True],  ## False if auto range is disabled,
                                         ## otherwise float gives the fraction of data that is visible
@@ -1172,6 +1173,35 @@ class ViewBox(GraphicsWidget):
     def xInverted(self):
         return self.state['xInverted']
 
+    def swapAxes(self):
+        state = self.getState()
+        # Swap x and y axis ranges
+        x_range = state["targetRange"][0]
+        y_range = state["targetRange"][1]
+        self.setRange(yRange=x_range, padding=0)
+        self.setRange(xRange=y_range, padding=0)
+
+        # Swap other related settings if necessary
+        self.enableAutoRange(ViewBox.XAxis, state["autoRange"][1])
+        self.enableAutoRange(ViewBox.YAxis, state["autoRange"][0])
+
+        self.setMouseEnabled(x=state["mouseEnabled"][1], y=state["mouseEnabled"][0])
+
+        self.invertX(state.get("yInverted", False))
+        self.invertY(state.get("xInverted", False))
+
+        self.state["xyAxesSwapped"] = not self.state[
+            "xyAxesSwapped"
+        ]  # Track axis swapping
+
+        self._matrixNeedsUpdate = True  # updateViewRange won't detect this for us
+        self.updateViewRange()
+        self.update()
+        self.sigStateChanged.emit(self)
+        self.sigYRangeChanged.emit(self, tuple(self.state["viewRange"][1]))
+        self.sigXRangeChanged.emit(self, tuple(self.state["viewRange"][0]))
+    
+
     def setBorder(self, *args, **kwds):
         """
         Set the pen used to draw border around the view
@@ -1685,32 +1715,42 @@ class ViewBox(GraphicsWidget):
     def updateMatrix(self, changed=None):
         if not self._matrixNeedsUpdate:
             return
-        ## Make the childGroup's transform match the requested viewRange.
+
+
         bounds = self.rect()
+
 
         vr = self.viewRect()
         if vr.height() == 0 or vr.width() == 0:
             return
-        scale = Point(bounds.width()/vr.width(), bounds.height()/vr.height())
-        if not self.state['yInverted']:
-            scale = scale * Point(1, -1)
-        if self.state['xInverted']:
-            scale = scale * Point(-1, 1)
-        m = QtGui.QTransform()
 
-        ## First center the viewport at 0
+        m = QtGui.QTransform()
         center = bounds.center()
         m.translate(center.x(), center.y())
 
-        ## Now scale and translate properly
-        m.scale(scale[0], scale[1])
-        st = Point(vr.center())
-        m.translate(-st[0], -st[1])
+        if self.state['xyAxesSwapped']:
+            #scale = Point(bounds.height() / vr.width(), bounds.width() / vr.height())
+            m.scale()
+            st = Point(vr.center())
+            m.translate(-st[1], -st[0])
+            
+        if not self.state['xyAxesSwapped']:
+            scale = Point(bounds.width() / vr.width(), bounds.height() / vr.height())
+
+            # Berücksichtige Invertierung
+            if not self.state['yInverted']:
+                scale = scale * Point(1, -1)
+            if self.state['xInverted']:
+                scale = scale * Point(-1, 1)
+
+            m.scale(scale[0], scale[1])
+            st = Point(vr.center())
+            m.translate(-st[0], -st[1])
 
         self.childGroup.setTransform(m)
         self._matrixNeedsUpdate = False
 
-        self.sigTransformChanged.emit(self)  ## segfaults here: 1
+        self.sigTransformChanged.emit(self)
 
     def paint(self, p, opt, widget):
         if self.border is not None:
