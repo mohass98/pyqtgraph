@@ -18,6 +18,10 @@ class ViewBoxMenu(QtWidgets.QMenu):
         self.viewAll = QtGui.QAction(translate("ViewBox", "View All"), self)
         self.viewAll.triggered.connect(self.autoRange)
         self.addAction(self.viewAll)
+
+        self.switchAxesAction = QtGui.QAction(translate("ViewBox", "Switch X and Y Axes"), self)
+        self.switchAxesAction.triggered.connect(self.switchAxes)
+        self.addAction(self.switchAxesAction)
         
         self.ctrl = []
         self.widgetGroups = []
@@ -68,6 +72,10 @@ class ViewBoxMenu(QtWidgets.QMenu):
         self.view().sigStateChanged.connect(self.viewStateChanged)
         
         self.updateState()
+
+    def switchAxes(self):
+        print("Switch Axes was clicked")
+        self.view().swapAxes()
 
     def viewStateChanged(self):
         self.valid = False
