@@ -9,7 +9,7 @@ from .. import Qt, debug
 from .. import functions as fn
 from .. import getConfigOption
 from ..Point import Point
-from ..Qt import QtCore, QtGui
+from ..Qt import QtCore, QtGui, QtWidgets
 from .GraphicsObject import GraphicsObject
 
 __all__ = ['ScatterPlotItem', 'SpotItem']
@@ -417,6 +417,23 @@ class ScatterPlotItem(GraphicsObject):
         # track when the tooltip is cleared so we only clear it once
         # this allows another item in the VB to set the tooltip
         self._toolTipCleared = True
+
+        self.menu = QtWidgets.QMenu()
+        setIndividualBrushColorAction = QtGui.QAction(QtCore.QCoreApplication.translate("ScatterPlotItem", "Set Brush Color"), self)
+        setIndividualBrushColorAction.triggered.connect(self.setIndividualSpotBrushColor)
+        self.menu.addAction(setIndividualBrushColorAction)
+
+        setAllBrushColorAction = QtGui.QAction(QtCore.QCoreApplication.translate("ScatterPlotItem", "Set Brush Color For All Points"), self)
+        setAllBrushColorAction.triggered.connect(self.setAllSpotBrushColor)
+        self.menu.addAction(setAllBrushColorAction)
+
+        setIndividualPenColorAction = QtGui.QAction(QtCore.QCoreApplication.translate("ScatterPlotItem", "Set Pen Color"), self)
+        setIndividualPenColorAction.triggered.connect(self.setIndividualSpotPenColor)
+        self.menu.addAction(setIndividualPenColorAction)
+
+        setAllPenColorAction = QtGui.QAction(QtCore.QCoreApplication.translate("ScatterPlotItem", "Set Pen Color For All Points"), self)
+        setAllPenColorAction.triggered.connect(self.setAllSpotPenColor)
+        self.menu.addAction(setAllPenColorAction)
 
     def setData(self, *args, **kargs):
         """
@@ -1082,8 +1099,65 @@ class ScatterPlotItem(GraphicsObject):
             else:
                 #print "no spots"
                 ev.ignore()
+        elif ev.button() == QtCore.Qt.MouseButton.RightButton:
+            pts = self.pointsAt(ev.pos())
+            if len(pts) > 0:
+                self.ptsClicked = pts
+                ev.accept()
+                self.raiseContextMenu(ev)
+            else:
+                #print "no spots"
+                ev.ignore()
+
         else:
             ev.ignore()
+
+    def raiseContextMenu(self, ev):
+        menu = self.getMenu(ev)
+        if menu is not None:
+            self.scene().addParentContextMenus(self, menu, ev)
+            menu.popup(ev.screenPos().toPoint())
+
+    def getMenu(self, ev):
+        return self.menu
+
+    def getColorFromDialog(self):
+        color = QtWidgets.QColorDialog.getColor()
+        if not color.isValid():
+            return None
+        return color.name()
+
+    def setIndividualSpotBrushColor(self):
+        color = self.getColorFromDialog()
+        if color:
+            brush = fn.mkBrush(color)
+            # self.setBrush(brush)
+            for p in self.ptsClicked:
+                p.setBrush(brush)
+
+    def setAllSpotBrushColor(self):
+        color = self.getColorFromDialog()
+        if color:
+            brush = fn.mkBrush(color)
+            # self.setBrush(brush)
+            for p in self.points():
+                p.setBrush(brush)
+
+    def setIndividualSpotPenColor(self):
+        color = self.getColorFromDialog()
+        if color:
+            pen = fn.mkPen(color=color, width=self.opts['pen'].width(), style=self.opts['pen'].style())
+            # self.setPen(pen)
+            for p in self.ptsClicked:
+                p.setPen(pen)
+
+    def setAllSpotPenColor(self):
+        color = self.getColorFromDialog()
+        if color:
+            pen = fn.mkPen(color=color, width=self.opts['pen'].width(), style=self.opts['pen'].style())
+            # self.setPen(pen)
+            for p in self.points():
+                p.setPen(pen)
 
     def hoverEvent(self, ev):
         if self.opts['hoverable']:

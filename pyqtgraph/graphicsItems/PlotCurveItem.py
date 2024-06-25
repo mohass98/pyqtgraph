@@ -267,6 +267,11 @@ class PlotCurveItem(GraphicsObject):
         self.setData(*args, **kargs)
         self.glstate = None
 
+        self.menu = QtWidgets.QMenu()
+        self.setCurveColorAction = QtGui.QAction(QtCore.QCoreApplication.translate("PlotCutveItem", "Set Curve Color"), self)
+        self.setCurveColorAction.triggered.connect(self.setCurveColor)
+        self.menu.addAction(self.setCurveColorAction)
+
     def implements(self, interface=None):
         ints = ['plotData']
         if interface is None:
@@ -1219,12 +1224,31 @@ class PlotCurveItem(GraphicsObject):
         return self._mouseShape
 
     def mouseClickEvent(self, ev):
-        if not self.clickable or ev.button() != QtCore.Qt.MouseButton.LeftButton:
+        if not self.clickable:
             return
         if self.mouseShape().contains(ev.pos()):
-            ev.accept()
-            self.sigClicked.emit(self, ev)
+            if ev.button() == QtCore.Qt.MouseButton.LeftButton:
+                ev.accept()
+                self.sigClicked.emit(self, ev)
+            elif ev.button() == QtCore.Qt.MouseButton.RightButton:
+                ev.accept()
+                self.raiseContextMenu(ev)
 
+    def raiseContextMenu(self, ev):
+        menu = self.getMenu(ev)
+        if menu is not None:
+            self.scene().addParentContextMenus(self, menu, ev)
+            menu.popup(ev.screenPos().toPoint())
+
+    def getMenu(self, ev):
+        return self.menu
+
+    def setCurveColor(self):
+        color = QtWidgets.QColorDialog.getColor()
+        if color.isValid():
+            color = color.name()
+            pen = fn.mkPen(color=color, width=self.opts['pen'].width(), style=self.opts['pen'].style())
+            self.setPen(pen)
 
 
 class ROIPlotItem(PlotCurveItem):
