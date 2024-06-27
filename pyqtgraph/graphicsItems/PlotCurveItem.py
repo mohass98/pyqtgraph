@@ -1224,6 +1224,18 @@ class PlotCurveItem(GraphicsObject):
         return self._mouseShape
 
     def mouseClickEvent(self, ev):
+        """
+        Handles mouse click events.
+    
+        Processes clicks if the object is clickable and the click is within
+        the object's shape. Left clicks emit a signal, while right clicks 
+        raise the context menu.
+    
+        Parameters
+        ----------
+        ev : QtGui.QMouseEvent
+            Contains details about the mouse click.
+        """
         if not self.clickable:
             return
         if self.mouseShape().contains(ev.pos()):
@@ -1235,15 +1247,47 @@ class PlotCurveItem(GraphicsObject):
                 self.raiseContextMenu(ev)
 
     def raiseContextMenu(self, ev):
+        """
+        Displays the context menu at the event's screen position.
+    
+        If a context menu is available, it adds any parent context menus
+        and shows the menu.
+    
+        Parameters
+        ----------
+        ev : QtGui.QContextMenuEvent
+            Contains details about the context menu request.
+        """
         menu = self.getMenu(ev)
         if menu is not None:
             self.scene().addParentContextMenus(self, menu, ev)
             menu.popup(ev.screenPos().toPoint())
 
     def getMenu(self, ev):
+        """
+        Retrieves the context menu.
+    
+        Returns the context menu associated with the object.
+    
+        Parameters
+        ----------
+        ev : QtGui.QContextMenuEvent
+            The event that requests the context menu.
+    
+        Returns
+        -------
+        QtWidgets.QMenu or None
+            The context menu to be displayed, or None if there is no menu.
+        """
         return self.menu
 
     def setCurveColor(self):
+        """
+        Opens a color dialog and sets the curve's pen color.
+    
+        Allows the user to select a color. Updates the curve's pen with the
+        chosen color, keeping the existing width and style.
+        """
         color = QtWidgets.QColorDialog.getColor()
         if color.isValid():
             color = color.name()
