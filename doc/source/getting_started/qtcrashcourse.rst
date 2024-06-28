@@ -105,7 +105,15 @@ Mouse Events
 ^^^^^^^^^^^^
 Mouse Events
 ^^^^^^^^^^^^
-Interactions such as clicks, movements, and button releases are managed by overriding methods including :meth:`QtWidget.mousePressEvent <PyQt6.QtWidgets.QtWidget.mousePressEvent>`, :meth:`QtWidget.mouseReleaseEvent <https://doc.qt.io/qt-6/qwidget.html#mouseReleaseEvent>`, :meth:`QtWidget.mouseDoubleClickEvent <https://doc.qt.io/qt-6/qwidget.html#mouseDoubleClickEvent>`, and :meth:`QtWidget.mouseMoveEvent <https://doc.qt.io/qt-6/qwidget.html#mouseMoveEvent>`.
+Interactions such as clicks, movements, and button releases are managed by 
+overriding methods including :meth:`QWidget.mousePressEvent 
+<https://doc.qt.io/qt-6/qwidget.html#mousePressEvent>`, 
+:meth:`QWidget.mouseReleaseEvent 
+<https://doc.qt.io/qt-6/qwidget.html#mouseReleaseEvent>`, 
+:meth:`QWidget.mouseDoubleClickEvent 
+<https://doc.qt.io/qt-6/qwidget.html#mouseDoubleClickEvent>`, and 
+:meth:`QWidget.mouseMoveEvent 
+<https://doc.qt.io/qt-6/qwidget.html#mouseMoveEvent>`.
 
 Integration with PyQtGraph
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
