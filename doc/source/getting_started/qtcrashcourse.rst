@@ -106,9 +106,9 @@ Mouse Events
 Mouse Events
 ^^^^^^^^^^^^
 Interactions such as clicks, movements, and button releases are managed by
-overriding methods including  `mousePressEvent`_,  
-`mouseReleaseEvent`_, 
-`mouseDoubleClickEvent`_,  and 
+overriding methods including  `mousePressEvent`_ ,  
+`mouseReleaseEvent`_ , 
+`mouseDoubleClickEvent`_ ,  and 
 `mouseMoveEvent`_.
 
 .. _mousePressEvent: https://doc.qt.io/qt-6/qwidget.html#mousePressEvent
