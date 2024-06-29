@@ -81,7 +81,6 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
     sigItemAdded = QtCore.Signal(object)  ## emits the item object just added
     sigItemRemoved = QtCore.Signal(object)  ## emits the item object just removed
 
-    sigBackgroundChanged = QtCore.Signal(str)   ## emitted when the Background Color was changed via the context menu
     _addressCache = weakref.WeakValueDictionary()
     
     ExportDirectory = None
@@ -107,38 +106,33 @@ class GraphicsScene(QtWidgets.QGraphicsScene):
         self.setBackgroundAction = QtGui.QAction(
             QtCore.QCoreApplication.translate("GraphicsScene", "Set Background color"), self
         )
-        self.setBackgroundAction.triggered.connect(self.setBackgroundFromContextMenu)
+        self.setBackgroundAction.triggered.connect(self.setBackground)
         self.contextMenu.append(self.setBackgroundAction)
         
         self.exportDialog = None
         self._lastMoveEventTime = 0
 
-    def setBackgroundFromContextMenu(self):
+    def setBackground(self):
         """
-        Opens a color picker dialog to allow the user to select a background color from the context menu.
+        Opens a QColorDialog for selecting a background color.
     
         This method performs the following steps:
-        1. Opens a QColorDialog to present a color picker to the user.
-        2. Checks if the user has selected a valid color.
-        3. If a valid color is selected, it retrives color as a hex string and emits a signal with the color.
+        1. Displays a color picker dialog.
+        2. Sets the selected color as the background of the view widget.
+            - If the view widget is an instance of GraphicsView, calls setBackground(color).
+            - Otherwise, calls setBackgroundBrush(color).
     
         Note:
         - The QColorDialog is a standard dialog provided by the Qt framework that allows users to select a color.
-        - The hex format of the color is a string in the form '#RRGGBB' (e.g., '#ff5733').
-    
-        Emits:
-        sigBackgroundChanged (str): A signal that carries the hex representation of the selected color.
         """
-        # Open the color picker dialog
         color = QtWidgets.QColorDialog.getColor()
 
-        # Check if a valid color was selected
         if color.isValid():
-            # Store the selected color as a hex string
-            selectedColorHex = color.name()  # Color in hex format
-
-            # Emit the signal with the selected color
-            self.sigBackgroundChanged.emit(selectedColorHex)
+            view_widget = self.getViewWidget()
+            if hasattr(view_widget, 'setBackground'):
+                view_widget.setBackground(color)
+            elif hasattr(view_widget, 'setBackgroundBrush'):
+                view_widget.setBackgroundBrush(color)
 
         
     def render(self, *args):
