@@ -127,31 +127,31 @@ in applications that leverage PyQtGraph for visual data representation.
 
 Example: Handling Mouse Clicks in a PlotWidget::
 
-from PyQt6.QtWidgets import QApplication, QMainWindow
-from PyQt6.QtCore import Qt
+    from PyQt6.QtWidgets import QApplication, QMainWindow
+    from PyQt6.QtCore import Qt
 
-# Should work with PyQt5 / PySide2 / PySide6 as well
+    # Should work with PyQt5 / PySide2 / PySide6 as well
 
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        # Sets the Title of the window
-        self.setWindowTitle('Mouse and Keyboard Event Demo')
-        # Sets the position and size of the window
-        self.setGeometry(100, 100, 400, 300)
+    class MainWindow(QMainWindow):
+        def __init__(self):
+            super().__init__()
+            # Sets the Title of the window
+            self.setWindowTitle('Mouse and Keyboard Event Demo')
+            # Sets the position and size of the window
+            self.setGeometry(100, 100, 400, 300)
 
-    def mousePressEvent(self, event):
-        # This method checks if the left mouse button was pressed on the widget
-        # and prints the position of the click.
-        if event.button() == Qt.MouseButton.LeftButton:
-            print("Left mouse button pressed at:", event.position())
+        def mousePressEvent(self, event):
+            # This method checks if the left mouse button was pressed on the widget
+            # and prints the position of the click.
+            if event.button() == Qt.MouseButton.LeftButton:
+                print("Left mouse button pressed at:", event.position())
 
-# Initialize the QApplication
-app = QApplication([])
-window = MainWindow()
-window.show()
-# Start the event loop
-app.exec()
+    # Initialize the QApplication
+    app = QApplication([])
+    window = MainWindow()
+    window.show()
+    # Start the event loop
+    app.exec()
 
 
 
@@ -174,36 +174,36 @@ Integration with PyQtGraph
 
 Example: Handling Keyboard Inputs:: 
 
-from PyQt6.QtWidgets import QApplication, QMainWindow
-from PyQt6.QtCore import Qt
+    from PyQt6.QtWidgets import QApplication, QMainWindow
+    from PyQt6.QtCore import Qt
 
-# Should work with PyQt5 / PySide2 / PySide6 as well
+    # Should work with PyQt5 / PySide2 / PySide6 as well
 
-class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        # Sets the title of the window
-        self.setWindowTitle('Keyboard Input Tracker')
-        # Sets the position and size of the window
-        self.setGeometry(100, 100, 400, 300)
+    class MainWindow(QMainWindow):
+        def __init__(self):
+            super().__init__()
+            # Sets the title of the window
+            self.setWindowTitle('Keyboard Input Tracker')
+            # Sets the position and size of the window
+            self.setGeometry(100, 100, 400, 300)
 
-    def keyPressEvent(self, event):
-        # Checks if a specific key was pressed
-        if event.key() == Qt.Key.Key_Escape:
-            print("Escape key was pressed.")
-        elif event.key() == Qt.Key.Key_Space:
-            print("Space bar was pressed.")
-        else:
-        # The 'event.text()' method retrieves the character or characters 
-        # associated with the key press, and then prints it to the console.
-            print(f"Key pressed: {event.text()}")
+        def keyPressEvent(self, event):
+            # Checks if a specific key was pressed
+            if event.key() == Qt.Key.Key_Escape:
+                print("Escape key was pressed.")
+            elif event.key() == Qt.Key.Key_Space:
+                print("Space bar was pressed.")
+            else:
+            # The 'event.text()' method retrieves the character or characters 
+            # associated with the key press, and then prints it to the console.
+                print(f"Key pressed: {event.text()}")
 
-# Initialize the QApplication
-app = QApplication([])
-window = MainWindow()
-window.show()
-# Start the event loop
-app.exec()
+    # Initialize the QApplication
+    app = QApplication([])
+    window = MainWindow()
+    window.show()
+    # Start the event loop
+    app.exec()
 
 
 Event Propagation
@@ -222,13 +222,13 @@ exert precise control over the event flow.
 
 Example: Custom Event Handling ::
 
-class CustomButton(QPushButton):
-    def mousePressEvent(self, event):
-        event.accept()  # The event is marked as handled, preventing further 
-                        # propagation
-        # Alternatively:
-        event.ignore()  # the event can be marked as unhandled, allowing it to 
-                        # propagate
+    class CustomButton(QPushButton):
+        def mousePressEvent(self, event):
+            event.accept()  # The event is marked as handled, preventing further 
+                            # propagation
+            # Alternatively:
+            event.ignore()  # the event can be marked as unhandled, allowing it to 
+                            # propagate
 
 
 
