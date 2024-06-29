@@ -103,15 +103,12 @@ Understanding events in a Qt application is fundamental before delving into spec
 
 Mouse Events
 ^^^^^^^^^^^^
-Mouse Events
-^^^^^^^^^^^^
 Interactions such as clicks, movements, and button releases are managed by
-overriding methods including  `mousePressEvent`_ ,  
-`mouseReleaseEvent`_ , 
-`mouseDoubleClickEvent`_ ,  and 
-`mouseMoveEvent`_.
+overriding methods including  :meth:`QGraphicsItem.mousePressEvent <QGraphicsItem.mousePressEvent>`, 
+mouseReleaseEvent_ , 
+mouseDoubleClickEvent_ ,  and 
+mouseMoveEvent_.
 
-.. _mousePressEvent: https://doc.qt.io/qt-6/qwidget.html#mousePressEvent
 .. _mouseReleaseEvent: https://doc.qt.io/qt-6/qwidget.html#mouseReleaseEvent
 .. _mouseDoubleClickEvent: https://doc.qt.io/qt-6/qwidget.html#mouseDoubleClickEvent
 .. _mouseMoveEvent: https://doc.qt.io/qt-6/qwidget.html#mouseMoveEvent
@@ -160,6 +157,7 @@ react to various keystrokes and facilitate shortcuts and other interactions.
 .. _keyPressEvent: https://doc.qt.io/qt-6/qwidget.html#keyPressEvent
 .. _keyReleaseEvent: https://doc.qt.io/qt-6/qwidget.html#keyReleaseEvent
 
+
 Integration with PyQtGraph
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -207,7 +205,6 @@ the event flow.
 
 .. _accept: https://doc.qt.io/qt-6/qevent.html#accept
 .. _ignore: https://doc.qt.io/qt-6/qevent.html#ignore
-
 
 Example: Custom Event Handling ::
 
